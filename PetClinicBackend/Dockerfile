@@ -1,14 +1,15 @@
-# Use official Java 21 image from Eclipse Temurin
+# Stage 1: Build the app
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the app
 FROM eclipse-temurin:21-jdk
 
-# Set working directory
 WORKDIR /app
+COPY --from=builder /app/target/PetClinicBackend-0.0.1-SNAPSHOT.jar app.jar
 
-# Copy Spring Boot JAR
-COPY target/PetClinicBackend-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose app port
 EXPOSE 8080
-
-# Run app
 ENTRYPOINT ["java", "-jar", "app.jar"]
